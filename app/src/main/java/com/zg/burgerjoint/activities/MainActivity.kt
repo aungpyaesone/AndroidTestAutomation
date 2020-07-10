@@ -4,6 +4,8 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.transition.Fade
 import android.view.View
@@ -21,11 +23,18 @@ import com.zg.burgerjoint.mvp.presenters.MainPresenter
 import com.zg.burgerjoint.mvp.presenters.impls.MainPresenterImpl
 import com.zg.burgerjoint.mvp.views.MainView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.view_item_burger.*
 
 class MainActivity : BaseActivity(), MainView {
 
     private lateinit var mBurgerAdapter: BurgerAdapter
     private lateinit var mPresenter: MainPresenter
+
+    companion object {
+        fun newIntent(context: Context): Intent {
+            return Intent(context, MainActivity::class.java)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +60,10 @@ class MainActivity : BaseActivity(), MainView {
         ivCart.setOnClickListener {
             mPresenter.onTapCart()
         }
+
+        btnPlayGame.setOnClickListener {
+            startActivity(GameActivity.newIntent(this))
+        }
     }
 
     private fun setUpPresenter() {
@@ -64,9 +77,19 @@ class MainActivity : BaseActivity(), MainView {
     }
 
     override fun navigateToBurgerDetailsScreenWithAnimation(burgerId: Int, burgerImageView: ImageView) {
-        val imagePair = Pair.create(burgerImageView as View, "tBurgerImage")
-        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this,imagePair)
-        ActivityCompat.startActivity(this,BurgerDetailsActivity.newIntent(this,burgerId),options.toBundle())
+//        val imagePair = Pair.create(burgerImageView as View, "tBurgerImage")
+//        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this,imagePair)
+//        ActivityCompat.startActivity(this,BurgerDetailsActivity.newIntent(this,burgerId),options.toBundle())
+        val pair = Pair
+            .create(burgerImageView as View, "tBurgerImage")
+        val namePair = Pair
+            .create(tvBurgerName as View, "tBurgerName")
+        val options = ActivityOptionsCompat
+            .makeSceneTransitionAnimation(this, pair, namePair)
+        startActivity(
+            BurgerDetailsActivity.newIntent(this, burgerId)
+            , options.toBundle()
+        )
     }
 
     override fun navigateToCartScreen() {
